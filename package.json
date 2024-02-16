@@ -1,0 +1,19 @@
+{
+  "name": "nsus",
+  "version": "1.0.0",
+  "description": "앤서스랩",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alli-eunbi/nsus.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alli-eunbi/nsus/issues"
+  },
+  "homepage": "https://github.com/alli-eunbi/nsus#readme"
+}
