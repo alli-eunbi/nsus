@@ -1,3 +1,6 @@
+data "aws_caller_identity" "current" {}
+
+
 provider "aws" {
   region = local.region
 }
@@ -29,8 +32,7 @@ locals {
 ################################################################################
 
 module "vpc" {
-  source  = "terraform-aws-modules/vpc/aws//examples/complete"
-  version = "5.5.2"
+  source  = "terraform-aws-modules/vpc/aws"
 
   name = local.name
   cidr = local.vpc_cidr
@@ -113,10 +115,11 @@ module "eks" {
       disk_size = 20
 
       # Remote access cannot be specified with a launch template
-      remote_access = {
-        ec2_ssh_key               = module.key_pair.key_pair_name
-        source_security_group_ids = [aws_security_group.remote_access.id]
-      }
+      # ISMS 보안 정책 위배
+      # remote_access = {
+      #   ec2_ssh_key               = module.key_pair.key_pair_name
+      #   source_security_group_ids = [aws_security_group.remote_access.id]
+      # }
   }
 
   tags = local.tags
