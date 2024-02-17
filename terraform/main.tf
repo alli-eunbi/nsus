@@ -103,21 +103,37 @@ module "eks" {
     ami_type       = "AL2_x86_64"
     instance_types = ["t2.micro"]
 
-    min_size = 2
-    max_size = 3
-    desired_size = 2
   }
 
   eks_managed_node_groups = {
-    # Default node group - as provided by AWS EKS
-    default_node_group = {
-      disk_size = 30
+    nsus_node_group = {
+      min_size = 2
+      max_size = 3
+      desired_size = 2
+      disk_size = 20
 
       # Remote access cannot be specified with a launch template
       remote_access = {
         ec2_ssh_key               = module.key_pair.key_pair_name
         source_security_group_ids = [aws_security_group.remote_access.id]
       }
+  }
+
+  tags = local.tags
+}
+
+      #       create_iam_role          = true
+#       iam_role_name            = "eks-managed-node-group-complete-example"
+#       iam_role_use_name_prefix = false
+#       iam_role_description     = "EKS managed node group complete example role"
+#       iam_role_tags = {
+#         Purpose = "Protector of the kubelet"
+#       }
+#       iam_role_additional_policies = {
+#         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+#         additional                         = aws_iam_policy.node_additional.arn
+#       }
+      
     }
 
   
@@ -248,8 +264,5 @@ module "eks" {
 #         }
 #       }
 #     }
-  }
 
-  tags = local.tags
-}
 
