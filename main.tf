@@ -1,3 +1,4 @@
+# 모듈화는 추후 진행
 provider "aws" {
   region  = "ap-northeast-2"
 }
@@ -109,8 +110,8 @@ resource "aws_nat_gateway" "nat_gateway_a" {
   }
 }
 
-resource "aws_nat_gateway" "nat_gateway_2" {
-  allocation_id = aws_eip.nat_2.id
+resource "aws_nat_gateway" "nat_gateway_c" {
+  allocation_id = aws_eip.nat_c.id
 
   subnet_id = aws_subnet.private_subnet_c.id
 
@@ -118,3 +119,6 @@ resource "aws_nat_gateway" "nat_gateway_2" {
     Name = "nat-gateway-c"
   }
 }
+
+
+
