@@ -255,7 +255,7 @@ module "iam_github_oidc_role" {
 
   # This should be updated to suit your organization, repository, references/branches, etc.
   subjects = [
-    "https://github.com/alli-eunbi/nsus"
+    "alli-eunbi/nsus"
   ]
 
   policies = {
