@@ -132,7 +132,7 @@ module "eks" {
 
   eks_managed_node_group_defaults = {
     ami_type       = "AL2_x86_64"
-    instance_types = ["t2.micro"]
+    instance_types = ["t2.micro", "t3.medium"]
 
   }
 
