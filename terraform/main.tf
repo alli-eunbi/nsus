@@ -248,6 +248,8 @@ resource "aws_iam_policy" "ECR_Read_Write" {
   })
 
 }
+
+
 module "iam_github_oidc_role" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
 
@@ -259,8 +261,8 @@ module "iam_github_oidc_role" {
   ]
 
   policies = {
-    S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-    additional = aws_iam_policy.ECR_Read_Write.arn
+    # S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
+    # additional = "aws_iam_policy.ECR_Read_Write.arn"
     # resource = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
   }
 
