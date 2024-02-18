@@ -11,5 +11,5 @@ spec:
   project: default
   source:
     path: apps
-    repoURL: https://github.com/alli-eunbi/nsus/tree/main/argocd
+    repoURL: https://github.com/alli-eunbi/nsus/argocd
     targetRevision: HEAD

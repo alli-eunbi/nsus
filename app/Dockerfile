@@ -2,7 +2,7 @@
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:20-alpine As build
+FROM node:16-alpine As build
 
 COPY . /
 WORKDIR /

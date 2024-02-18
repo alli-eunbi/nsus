@@ -166,140 +166,7 @@ module "eks" {
   # }
       
 }
-resource aws_eks_access_entry nsus_cluster {
-  cluster_name = local.name
-  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/nsus"
-  type = "STANDARD"
-}
 
-  
-  # 나중에 운영에 가깝게 만들고 싶을때를 위해 잠시 주석 처리
-#     # Complete
-#     complete = {
-#       name            = "complete-eks-mng"
-#       use_name_prefix = true
-
-#       subnet_ids = module.vpc.private_subnets
-
-#       min_size     = 1
-#       max_size     = 7
-#       desired_size = 1
-
-#       ami_id                     = data.aws_ami.eks_default.image_id
-#       enable_bootstrap_user_data = true
-
-#       pre_bootstrap_user_data = <<-EOT
-#         export FOO=bar
-#       EOT
-
-#       post_bootstrap_user_data = <<-EOT
-#         echo "you are free little kubelet!"
-#       EOT
-
-#       capacity_type        = "SPOT"
-#       force_update_version = true
-#       instance_types       = ["m6i.large", "m5.large", "m5n.large", "m5zn.large"]
-#       labels = {
-#         GithubRepo = "terraform-aws-eks"
-#         GithubOrg  = "terraform-aws-modules"
-#       }
-
-#       taints = [
-#         {
-#           key    = "dedicated"
-#           value  = "gpuGroup"
-#           effect = "NO_SCHEDULE"
-#         }
-#       ]
-
-#       update_config = {
-#         max_unavailable_percentage = 33 # or set `max_unavailable`
-#       }
-
-#       description = "EKS managed node group example launch template"
-
-#       ebs_optimized           = true
-#       disable_api_termination = false
-#       enable_monitoring       = true
-
-#       block_device_mappings = {
-#         xvda = {
-#           device_name = "/dev/xvda"
-#           ebs = {
-#             volume_size           = 75
-#             volume_type           = "gp3"
-#             iops                  = 3000
-#             throughput            = 150
-#             encrypted             = true
-#             kms_key_id            = module.ebs_kms_key.key_arn
-#             delete_on_termination = true
-#           }
-#         }
-#       }
-
-#       metadata_options = {
-#         http_endpoint               = "enabled"
-#         http_tokens                 = "required"
-#         http_put_response_hop_limit = 2
-#         instance_metadata_tags      = "disabled"
-#       }
-
-#       create_iam_role          = true
-#       iam_role_name            = "eks-managed-node-group-complete-example"
-#       iam_role_use_name_prefix = false
-#       iam_role_description     = "EKS managed node group complete example role"
-#       iam_role_tags = {
-#         Purpose = "Protector of the kubelet"
-#       }
-#       iam_role_additional_policies = {
-#         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-#         additional                         = aws_iam_policy.node_additional.arn
-#       }
-
-#       tags = {
-#         ExtraTag = "EKS managed node group complete example"
-#       }
-#     }
-#   }
-
-#   access_entries = {
-#     # One access entry with a policy associated
-#     ex-single = {
-#       kubernetes_groups = []
-#       principal_arn     = aws_iam_role.this["single"].arn
-
-#       policy_associations = {
-#         single = {
-#           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-#           access_scope = {
-#             namespaces = ["default"]
-#             type       = "namespace"
-#           }
-#         }
-#       }
-#     }
-
-#     # Example of adding multiple policies to a single access entry
-#     ex-multiple = {
-#       kubernetes_groups = []
-#       principal_arn     = aws_iam_role.this["multiple"].arn
-
-#       policy_associations = {
-#         ex-one = {
-#           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy"
-#           access_scope = {
-#             namespaces = ["default"]
-#             type       = "namespace"
-#           }
-#         }
-#         ex-two = {
-#           policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
-#           access_scope = {
-#             type = "cluster"
-#           }
-#         }
-#       }
-#     }
 
 
 # ################################################################################
@@ -344,9 +211,9 @@ resource aws_eks_access_entry nsus_cluster {
 module "iam_github_oidc_provider" {
   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
 
-  # tags = {
-  #   Name = "iam-provider-github-oidc"
-  #   }
+  tags = {
+    Name = "iam-provider-github-oidc"
+    }
 }
 
 # module "iam_github_oidc_provider_disabled" {
@@ -374,7 +241,8 @@ resource "aws_iam_policy" "ECR_Read_Write" {
             "ecr:PutImage",
             "ecr:UploadLayerPart"
         ]
-        Effect   = "Allow"
+        "Effect"   = "Allow"
+        "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
       },
     ]
   })
@@ -392,7 +260,8 @@ module "iam_github_oidc_role" {
 
   policies = {
     additional = aws_iam_policy.ECR_Read_Write.arn
-    ECRAccess = "arn:aws:iam::aws:policy/AmazonECRAccess"
+    # ECRAccess = "arn:aws:iam::aws:policy/AmazonECRAccess"
+    # resource = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
   }
 
   tags = {
