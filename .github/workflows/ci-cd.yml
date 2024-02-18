@@ -48,7 +48,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build and push docker image to Amazon ECR
         env:
-          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REGISTRY: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com/nsus
           REPOSITORY: test-api
           IMAGE_TAG: ${{ github.sha }}
         run: |

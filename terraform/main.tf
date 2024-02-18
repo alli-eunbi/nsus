@@ -232,6 +232,7 @@ resource "aws_iam_policy" "ECR_Read_Write" {
     Version = "2012-10-17"
     Statement = [
       {
+        "Sid": "GetAuthorizationToken"
         "Action": [
             "ecr:BatchGetImage",
             "ecr:BatchCheckLayerAvailability",
@@ -243,7 +244,8 @@ resource "aws_iam_policy" "ECR_Read_Write" {
             "ecr:GetAuthorizationToken"
         ]
         "Effect"   = "Allow"
-        "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
+        "Resource" = "*"
+        # "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
       },
     ]
   })
@@ -290,7 +292,11 @@ resource "aws_ecr_repository" "nsus-ecr" {
     scan_on_push = true
   }
 }
- 
+
+# resource "aws_ecr_repository_policy" "nsus_ecr_policy" {
+#   repository = aws_ecr_repository.nsus-ecr.name
+#   policy     = aws_iam_policy.ECR_Read_Write.policy.json
+# }
 
 output "ecr_registry_id" {
   value = aws_ecr_repository.nsus-ecr.registry_id
