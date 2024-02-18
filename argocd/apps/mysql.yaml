@@ -3,27 +3,25 @@ kind: Application
 metadata:
   name: mysql
   namespace: argocd
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
 
 spec:
   project: default
-  source:
-    repoURL: oci://registry-1.docker.io/bitnamicharts/mysql
-    chart: mysql
-    targetRevision: "9.19.1"
-    helm:
-      parameters:
-        - name: "auth.username"
-          value: "root"
-        - name: "auth.rootPassword"
-          value: "1234"
-        - name: "auth.database"
-          value: "order"
-        - name: "primary.command"
-          value:
-            - --character-set-server=utf8
-            - --collation-server=utf8_general_ci
+  sources:
+    - repoURL: oci://registry-1.docker.io/bitnamicharts/mysql
+      chart: mysql
+      targetRevision: "9.19.1"
+      helm:
+        parameters:
+          - name: "auth.username"
+            value: "root"
+          - name: "auth.rootPassword"
+            value: "1234"
+          - name: "auth.database"
+            value: "order"
+          - name: "primary.command"
+            value:
+              - --character-set-server=utf8
+              - --collation-server=utf8_general_ci
 
   destination:
     namespace: default
