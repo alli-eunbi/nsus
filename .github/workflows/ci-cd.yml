@@ -48,8 +48,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build and push docker image to Amazon ECR
         env:
-          REGISTRY: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com/nsus
-          REPOSITORY: test-api
+          REGISTRY: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com
+          REPOSITORY: nsus
           IMAGE_TAG: ${{ github.sha }}
         run: |
           docker build -t --imageName=$REGISTRY/$REPOSITORY:$IMAGE_TAG
@@ -61,8 +61,3 @@ jobs:
         run: |
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
-
-          git add demo/values.yaml demo/values-eks.yaml;
-          git commit --message "Update image tag to $IMAGE_TAG";
-          git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
-          git push -u origin main
