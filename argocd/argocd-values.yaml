@@ -265,84 +265,6 @@ configs:
   cmp:
     # -- Create the argocd-cmp-cm configmap
     create: false
-
-    # -- Annotations to be added to argocd-cmp-cm configmap
-    annotations: {}
-
-    # -- Plugin yaml files to be added to argocd-cmp-cm
-    plugins:
-      {}
-      # --- First plugin
-      # my-plugin:
-      #   init:
-      #     command: [sh]
-      #     args: [-c, 'echo "Initializing..."']
-      #   generate:
-      #     command: [sh, -c]
-      #     args:
-      #       - |
-      #         echo "{\"kind\": \"ConfigMap\", \"apiVersion\": \"v1\", \"metadata\": { \"name\": \"$ARGOCD_APP_NAME\", \"namespace\": \"$ARGOCD_APP_NAMESPACE\", \"annotations\": {\"Foo\": \"$ARGOCD_ENV_FOO\", \"KubeVersion\": \"$KUBE_VERSION\", \"KubeApiVersion\": \"$KUBE_API_VERSIONS\",\"Bar\": \"baz\"}}}"
-      #   discover:
-      #     fileName: "./subdir/s*.yaml"
-      #     find:
-      #       glob: "**/Chart.yaml"
-      #       command: [sh, -c, find . -name env.yaml]
-
-      # --- Second plugin
-      # my-plugin2:
-      #   init:
-      #     command: [sh]
-      #     args: [-c, 'echo "Initializing..."']
-      #   generate:
-      #     command: [sh, -c]
-      #     args:
-      #       - |
-      #         echo "{\"kind\": \"ConfigMap\", \"apiVersion\": \"v1\", \"metadata\": { \"name\": \"$ARGOCD_APP_NAME\", \"namespace\": \"$ARGOCD_APP_NAMESPACE\", \"annotations\": {\"Foo\": \"$ARGOCD_ENV_FOO\", \"KubeVersion\": \"$KUBE_VERSION\", \"KubeApiVersion\": \"$KUBE_API_VERSIONS\",\"Bar\": \"baz\"}}}"
-      #   discover:
-      #     fileName: "./subdir/s*.yaml"
-      #     find:
-      #       glob: "**/Chart.yaml"
-      #       command: [sh, -c, find . -name env.yaml]
-
-  # -- Provide one or multiple [external cluster credentials]
-  # @default -- `[]` (See [values.yaml])
-  ## Ref:
-  ## - https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#clusters
-  ## - https://argo-cd.readthedocs.io/en/stable/operator-manual/security/#external-cluster-credentials
-  ## - https://argo-cd.readthedocs.io/en/stable/user-guide/projects/#project-scoped-repositories-and-clusters
-  clusterCredentials:
-    []
-    # - name: mycluster
-    #   server: https://mycluster.example.com
-    #   labels: {}
-    #   annotations: {}
-    #   config:
-    #     bearerToken: "<authentication token>"
-    #     tlsClientConfig:
-    #       insecure: false
-    #       caData: "<base64 encoded certificate>"
-    # - name: mycluster2
-    #   server: https://mycluster2.example.com
-    #   labels: {}
-    #   annotations: {}
-    #   namespaces: namespace1,namespace2
-    #   clusterResources: true
-    #   config:
-    #     bearerToken: "<authentication token>"
-    #     tlsClientConfig:
-    #       insecure: false
-    #       caData: "<base64 encoded certificate>"
-    # - name: mycluster3-project-scoped
-    #   server: https://mycluster3.example.com
-    #   labels: {}
-    #   annotations: {}
-    #   project: my-project1
-    #   config:
-    #     bearerToken: "<authentication token>"
-    #     tlsClientConfig:
-    #       insecure: false
-    #       caData: "<base64 encoded certificate>"
-
   # -- Repository credentials to be used as Templates for other repos
   ## Creates a secret for each key/value specified below to create repository credentials
   credentialTemplates:
@@ -375,9 +297,9 @@ configs:
   ## Note: the last example in the list would use a repository credential template, configured under "configs.credentialTemplates".
   repositories:
     nsus:
-      url: https://github.com/alli-eunbi/nsus/argocd
+      url: https://github.com/alli-eunbi/nsus.git
       name: nsus
-      type: helm
+      type: git
     # istio-helm-repo:
     #   url: https://storage.googleapis.com/istio-prerelease/daily-build/master-latest-daily/charts
     #   name: istio.io
@@ -416,9 +338,7 @@ configs:
       # LDAP_PASSWORD: "mypassword"
 
     # 임시 argocd server admin password
-    argocdServerAdminPassword: "bBaFjCdXbmW5n7Ew"
-    # 임시 argocd server admin password 유지 기한
-    argocdServerAdminPasswordMtime: "2024-02-28T23:04:05Z"
+    argocdServerAdminPassword: $2a$10$Lvnendj5L6t9HAWEMp3Cc.rBGZ0xwv5AmKoVv2IWq2aEavim/gg5u
 
   # -- Define custom [CSS styles] for your argo instance.
   # This setting will automatically mount the provided CSS and reference it in the argo configuration.
@@ -471,126 +391,6 @@ controller:
 
   # -- Maximum number of controller revisions that will be maintained in StatefulSet history
   revisionHistoryLimit: 5
-
-  ## Application controller Pod Disruption Budget
-  ## Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-  pdb:
-    # -- Deploy a [PodDisruptionBudget] for the application controller
-    enabled: false
-    # -- Labels to be added to application controller pdb
-    labels: {}
-    # -- Annotations to be added to application controller pdb
-    annotations: {}
-    # -- Number of pods that are available after eviction as number or percentage (eg.: 50%)
-    # @default -- `""` (defaults to 0 if not specified)
-    minAvailable: ""
-    # -- Number of pods that are unavailable after eviction as number or percentage (eg.: 50%).
-    ## Has higher precedence over `controller.pdb.minAvailable`
-    maxUnavailable: ""
-
-  ## Application controller image
-  image:
-    # -- Repository to use for the application controller
-    # @default -- `""` (defaults to global.image.repository)
-    repository: ""
-    # -- Tag to use for the application controller
-    # @default -- `""` (defaults to global.image.tag)
-    tag: ""
-    # -- Image pull policy for the application controller
-    # @default -- `""` (defaults to global.image.imagePullPolicy)
-    imagePullPolicy: ""
-
-  # -- Secrets with credentials to pull images from a private registry
-  # @default -- `[]` (defaults to global.imagePullSecrets)
-  imagePullSecrets: []
-
-  # -- Additional command line arguments to pass to application controller
-  extraArgs: []
-
-  # -- Environment variables to pass to application controller
-  env: []
-
-  # -- envFrom to pass to application controller
-  # @default -- `[]` (See [values.yaml])
-  envFrom: []
-  # - configMapRef:
-  #     name: config-map-name
-  # - secretRef:
-  #     name: secret-name
-
-  # -- Additional containers to be added to the application controller pod
-  ## Note: Supports use of custom Helm templates
-  extraContainers: []
-
-  # -- Init containers to add to the application controller pod
-  ## If your target Kubernetes cluster(s) require a custom credential (exec) plugin
-  ## you could use this (and the same in the server pod) to provide such executable
-  ## Ref: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins
-  ## Note: Supports use of custom Helm templates
-  initContainers: []
-  #  - name: download-tools
-  #    image: alpine:3
-  #    command: [sh, -c]
-  #    args:
-  #      - wget -qO kubelogin.zip https://github.com/Azure/kubelogin/releases/download/v0.0.25/kubelogin-linux-amd64.zip &&
-  #        unzip kubelogin.zip && mv bin/linux_amd64/kubelogin /custom-tools/
-  #    volumeMounts:
-  #      - mountPath: /custom-tools
-  #        name: custom-tools
-
-  # -- Additional volumeMounts to the application controller main container
-  volumeMounts: []
-  #  - mountPath: /usr/local/bin/kubelogin
-  #    name: custom-tools
-  #    subPath: kubelogin
-
-  # -- Additional volumes to the application controller pod
-  volumes: []
-  #  - name: custom-tools
-  #    emptyDir: {}
-
-  # -- Annotations for the application controller StatefulSet
-  statefulsetAnnotations: {}
-
-  # -- Annotations to be added to application controller pods
-  podAnnotations: {}
-
-  # -- Labels to be added to application controller pods
-  podLabels: {}
-
-  # -- Resource limits and requests for the application controller pods
-  resources: {}
-  #  limits:
-  #    cpu: 500m
-  #    memory: 512Mi
-  #  requests:
-  #    cpu: 250m
-  #    memory: 256Mi
-
-  # Application controller container ports
-  containerPorts:
-    # -- Metrics container port
-    metrics: 8082
-
-  # -- Host Network for application controller pods
-  hostNetwork: false
-
-  # -- [DNS configuration]
-  dnsConfig: {}
-  # -- Alternative DNS policy for application controller pods
-  dnsPolicy: "ClusterFirst"
-
-  # -- Application controller container-level security context
-  # @default -- See [values.yaml]
-  containerSecurityContext:
-    runAsNonRoot: true
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    seccompProfile:
-      type: RuntimeDefault
-    capabilities:
-      drop:
-        - ALL
 
   # Readiness probe for application controller
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
@@ -647,381 +447,10 @@ controller:
     # -- Automount API credentials for the Service Account
     automountServiceAccountToken: true
 
-  ## Application controller metrics configuration
-  metrics:
-    # -- Deploy metrics service
-    enabled: false
-    # -- Prometheus ServiceMonitor scrapeTimeout. If empty, Prometheus uses the global scrape timeout unless it is less than the target's scrape interval value in which the latter is used.
-    scrapeTimeout: ""
-    applicationLabels:
-      # -- Enables additional labels in argocd_app_labels metric
-      enabled: false
-      # -- Additional labels
-      labels: []
-    service:
-      # -- Metrics service type
-      type: ClusterIP
-      # -- Metrics service clusterIP. `None` makes a "headless service" (no virtual IP)
-      clusterIP: ""
-      # -- Metrics service annotations
-      annotations: {}
-      # -- Metrics service labels
-      labels: {}
-      # -- Metrics service port
-      servicePort: 8082
-      # -- Metrics service port name
-      portName: http-metrics
-    serviceMonitor:
-      # -- Enable a prometheus ServiceMonitor
-      enabled: false
-      # -- Prometheus ServiceMonitor interval
-      interval: 30s
-      # -- Prometheus [RelabelConfigs] to apply to samples before scraping
-      relabelings: []
-      # -- Prometheus [MetricRelabelConfigs] to apply to samples before ingestion
-      metricRelabelings: []
-      # -- Prometheus ServiceMonitor selector
-      selector:
-        {}
-        # prometheus: kube-prometheus
-
-      # -- Prometheus ServiceMonitor scheme
-      scheme: ""
-      # -- Prometheus ServiceMonitor tlsConfig
-      tlsConfig: {}
-      # -- Prometheus ServiceMonitor namespace
-      namespace: "" # "monitoring"
-      # -- Prometheus ServiceMonitor labels
-      additionalLabels: {}
-      # -- Prometheus ServiceMonitor annotations
-      annotations: {}
-    rules:
-      # -- Deploy a PrometheusRule for the application controller
-      enabled: false
-      # -- PrometheusRule namespace
-      namespace: "" # "monitoring"
-      # -- PrometheusRule selector
-      selector:
-        {}
-        # prometheus: kube-prometheus
-
-      # -- PrometheusRule labels
-      additionalLabels: {}
-      # -- PrometheusRule annotations
-      annotations: {}
-
-      # -- PrometheusRule.Spec for the application controller
-      spec: []
-      # - alert: ArgoAppMissing
-      #   expr: |
-      #     absent(argocd_app_info) == 1
-      #   for: 15m
-      #   labels:
-      #     severity: critical
-      #   annotations:
-      #     summary: "[Argo CD] No reported applications"
-      #     description: >
-      #       Argo CD has not reported any applications data for the past 15 minutes which
-      #       means that it must be down or not functioning properly.  This needs to be
-      #       resolved for this cloud to continue to maintain state.
-      # - alert: ArgoAppNotSynced
-      #   expr: |
-      #     argocd_app_info{sync_status!="Synced"} == 1
-      #   for: 12h
-      #   labels:
-      #     severity: warning
-      #   annotations:
-      #     summary: "[{{`{{$labels.name}}`}}] Application not synchronized"
-      #     description: >
-      #       The application [{{`{{$labels.name}}`}} has not been synchronized for over
-      #       12 hours which means that the state of this cloud has drifted away from the
-      #       state inside Git.
-
-  ## Enable this and set the rules: to whatever custom rules you want for the Cluster Role resource.
-  ## Defaults to off
-  clusterRoleRules:
-    # -- Enable custom rules for the application controller's ClusterRole resource
-    enabled: false
-    # -- List of custom rules for the application controller's ClusterRole resource
-    rules: []
-
 ## Dex
 dex:
   # -- Enable dex
-  enabled: true
-  # -- Dex name
-  name: dex-server
-
-  # -- Additional command line arguments to pass to the Dex server
-  extraArgs: []
-
-  metrics:
-    # -- Deploy metrics service
-    enabled: false
-    service:
-      # -- Metrics service annotations
-      annotations: {}
-      # -- Metrics service labels
-      labels: {}
-      # -- Metrics service port name
-      portName: http-metrics
-    serviceMonitor:
-      # -- Enable a prometheus ServiceMonitor
-      enabled: false
-      # -- Prometheus ServiceMonitor interval
-      interval: 30s
-      # -- Prometheus [RelabelConfigs] to apply to samples before scraping
-      relabelings: []
-      # -- Prometheus [MetricRelabelConfigs] to apply to samples before ingestion
-      metricRelabelings: []
-      # -- Prometheus ServiceMonitor selector
-      selector:
-        {}
-        # prometheus: kube-prometheus
-
-      # -- Prometheus ServiceMonitor scheme
-      scheme: ""
-      # -- Prometheus ServiceMonitor tlsConfig
-      tlsConfig: {}
-      # -- Prometheus ServiceMonitor namespace
-      namespace: "" # "monitoring"
-      # -- Prometheus ServiceMonitor labels
-      additionalLabels: {}
-      # -- Prometheus ServiceMonitor annotations
-      annotations: {}
-
-  ## Dex Pod Disruption Budget
-  ## Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
-  pdb:
-    # -- Deploy a [PodDisruptionBudget] for the Dex server
-    enabled: false
-    # -- Labels to be added to Dex server pdb
-    labels: {}
-    # -- Annotations to be added to Dex server pdb
-    annotations: {}
-    # -- Number of pods that are available after eviction as number or percentage (eg.: 50%)
-    # @default -- `""` (defaults to 0 if not specified)
-    minAvailable: ""
-    # -- Number of pods that are unavailble after eviction as number or percentage (eg.: 50%).
-    ## Has higher precedence over `dex.pdb.minAvailable`
-    maxUnavailable: ""
-
-  ## Dex image
-  image:
-    # -- Dex image repository
-    repository: ghcr.io/dexidp/dex
-    # -- Dex image tag
-    tag: v2.38.0
-    # -- Dex imagePullPolicy
-    # @default -- `""` (defaults to global.image.imagePullPolicy)
-    imagePullPolicy: ""
-
-  # -- Secrets with credentials to pull images from a private registry
-  # @default -- `[]` (defaults to global.imagePullSecrets)
-  imagePullSecrets: []
-
-  # Argo CD init image that creates Dex config
-  initImage:
-    # -- Argo CD init image repository
-    # @default -- `""` (defaults to global.image.repository)
-    repository: ""
-    # -- Argo CD init image tag
-    # @default -- `""` (defaults to global.image.tag)
-    tag: ""
-    # -- Argo CD init image imagePullPolicy
-    # @default -- `""` (defaults to global.image.imagePullPolicy)
-    imagePullPolicy: ""
-    # -- Argo CD init image resources
-    # @default -- `{}` (defaults to dex.resources)
-    resources: {}
-    #  requests:
-    #    cpu: 5m
-    #    memory: 96Mi
-    #  limits:
-    #    cpu: 10m
-    #    memory: 144Mi
-
-  # -- Environment variables to pass to the Dex server
-  env: []
-
-  # -- envFrom to pass to the Dex server
-  # @default -- `[]` (See [values.yaml])
-  envFrom: []
-  # - configMapRef:
-  #     name: config-map-name
-  # - secretRef:
-  #     name: secret-name
-
-  # -- Additional containers to be added to the dex pod
-  ## Note: Supports use of custom Helm templates
-  extraContainers: []
-
-  # -- Init containers to add to the dex pod
-  ## Note: Supports use of custom Helm templates
-  initContainers: []
-
-  # -- Additional volumeMounts to the dex main container
-  volumeMounts: []
-
-  # -- Additional volumes to the dex pod
-  volumes: []
-
-  # TLS certificate configuration via Secret
-  ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/tls/#configuring-tls-to-argocd-dex-server
-  ## Note: Issuing certificates via cert-manager in not supported right now because it's not possible to restart Dex automatically without extra controllers.
-  certificateSecret:
-    # -- Create argocd-dex-server-tls secret
-    enabled: false
-    # -- Labels to be added to argocd-dex-server-tls secret
-    labels: {}
-    # -- Annotations to be added to argocd-dex-server-tls secret
-    annotations: {}
-    # -- Certificate authority. Required for self-signed certificates.
-    ca: ""
-    # -- Certificate private key
-    key: ""
-    # -- Certificate data. Must contain SANs of Dex service (ie: argocd-dex-server, argocd-dex-server.argo-cd.svc)
-    crt: ""
-
-  # -- Annotations to be added to the Dex server Deployment
-  deploymentAnnotations: {}
-
-  # -- Annotations to be added to the Dex server pods
-  podAnnotations: {}
-
-  # -- Labels to be added to the Dex server pods
-  podLabels: {}
-
-  # -- Resource limits and requests for dex
-  resources: {}
-  #  limits:
-  #    cpu: 50m
-  #    memory: 64Mi
-  #  requests:
-  #    cpu: 10m
-  #    memory: 32Mi
-
-  # Dex container ports
-  # NOTE: These ports are currently hardcoded and cannot be changed
-  containerPorts:
-    # -- HTTP container port
-    http: 5556
-    # -- gRPC container port
-    grpc: 5557
-    # -- Metrics container port
-    metrics: 5558
-
-  # -- [DNS configuration]
-  dnsConfig: {}
-  # -- Alternative DNS policy for Dex server pods
-  dnsPolicy: "ClusterFirst"
-
-  # -- Dex container-level security context
-  # @default -- See [values.yaml]
-  containerSecurityContext:
-    runAsNonRoot: true
-    readOnlyRootFilesystem: true
-    allowPrivilegeEscalation: false
-    seccompProfile:
-      type: RuntimeDefault
-    capabilities:
-      drop:
-        - ALL
-
-  ## Probes for Dex server
-  ## Supported from Dex >= 2.28.0
-  livenessProbe:
-    # -- Enable Kubernetes liveness probe for Dex >= 2.28.0
-    enabled: false
-    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
-    failureThreshold: 3
-    # -- Number of seconds after the container has started before [probe] is initiated
-    initialDelaySeconds: 10
-    # -- How often (in seconds) to perform the [probe]
-    periodSeconds: 10
-    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
-    successThreshold: 1
-    # -- Number of seconds after which the [probe] times out
-    timeoutSeconds: 1
-
-  readinessProbe:
-    # -- Enable Kubernetes readiness probe for Dex >= 2.28.0
-    enabled: false
-    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
-    failureThreshold: 3
-    # -- Number of seconds after the container has started before [probe] is initiated
-    initialDelaySeconds: 10
-    # -- How often (in seconds) to perform the [probe]
-    periodSeconds: 10
-    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
-    successThreshold: 1
-    # -- Number of seconds after which the [probe] times out
-    timeoutSeconds: 1
-
-  # -- terminationGracePeriodSeconds for container lifecycle hook
-  terminationGracePeriodSeconds: 30
-
-  serviceAccount:
-    # -- Create dex service account
-    create: true
-    # -- Dex service account name
-    name: argocd-dex-server
-    # -- Annotations applied to created service account
-    annotations: {}
-    # -- Automount API credentials for the Service Account
-    automountServiceAccountToken: true
-
-  # -- Service port for HTTP access
-  servicePortHttp: 5556
-  # -- Service port name for HTTP access
-  servicePortHttpName: http
-  # -- Service port for gRPC access
-  servicePortGrpc: 5557
-  # -- Service port name for gRPC access
-  servicePortGrpcName: grpc
-  # -- Service port for metrics access
-  servicePortMetrics: 5558
-
-  # -- Priority class for the dex pods
-  # @default -- `""` (defaults to global.priorityClassName)
-  priorityClassName: ""
-
-  # -- [Node selector]
-  # @default -- `{}` (defaults to global.nodeSelector)
-  nodeSelector: {}
-
-  # -- [Tolerations] for use with node taints
-  # @default -- `[]` (defaults to global.tolerations)
-  tolerations: []
-
-  # -- Assign custom [affinity] rules to the deployment
-  # @default -- `{}` (defaults to global.affinity preset)
-  affinity: {}
-
-  # -- Assign custom [TopologySpreadConstraints] rules to dex
-  # @default -- `[]` (defaults to global.topologySpreadConstraints)
-  ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
-  ## If labelSelector is left out, it will default to the labelSelector configuration of the deployment
-  topologySpreadConstraints:
-    []
-    # - maxSkew: 1
-    #   topologyKey: topology.kubernetes.io/zone
-    #   whenUnsatisfiable: DoNotSchedule
-
-  # -- Deployment strategy to be added to the Dex server Deployment
-  deploymentStrategy:
-    {}
-    # type: RollingUpdate
-    # rollingUpdate:
-    #   maxSurge: 25%
-    #   maxUnavailable: 25%
-
-  # -- Dex log format. Either `text` or `json`
-  # @default -- `""` (defaults to global.logging.format)
-  logFormat: ""
-  # -- Dex log level. One of: `debug`, `info`, `warn`, `error`
-  # @default -- `""` (defaults to global.logging.level)
-  logLevel: ""
+  enabled: false
 
 ## Redis
 redis:
@@ -1084,8 +513,8 @@ redis:
       cpu: 200m
       memory: 128Mi
     requests:
-      cpu: 100m
-      memory: 64Mi
+      cpu: 50m
+      memory: 32Mi
 
 ## Server
 server:
@@ -1102,8 +531,7 @@ server:
       memory: 128Mi
     requests:
       cpu: 50m
-      memory: 64Mi
-
+      memory: 32Mi
   ## Readiness and liveness probes for default backend
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
   readinessProbe:
@@ -1340,14 +768,6 @@ repoServer:
   serviceAccount:
     # -- Create repo server service account
     create: true
-    # -- Repo server service account name
-    name: "" # "argocd-repo-server"
-    # -- Annotations applied to created service account
-    annotations: {}
-    # -- Labels applied to created service account
-    labels: {}
-    # -- Automount API credentials for the Service Account
-    automountServiceAccountToken: true
 
   # -- Repo server rbac rules
   rbac: []
@@ -1363,61 +783,8 @@ repoServer:
 ## ApplicationSet controller
 applicationSet:
   # -- Enable ApplicationSet controller
-  enabled: true
+  enabled: false
 
-  # -- ApplicationSet controller name string
-  name: applicationset-controller
-
-  # -- The number of ApplicationSet controller pods to run
-  replicas: 1
-
-  # -- Resource limits and requests for the ApplicationSet controller pods.
-  resources:
-    limits:
-      cpu: 100m
-      memory: 128Mi
-    requests:
-      cpu: 100m
-      memory: 128Mi
-
-  # ApplicationSet controller container ports
-  containerPorts:
-    # -- Metrics container port
-    metrics: 8080
-    # -- Probe container port
-    probe: 8081
-    # -- Webhook container port
-    webhook: 7000
-
-  ## Probes for ApplicationSet controller (optional)
-  ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
-  readinessProbe:
-    # -- Enable Kubernetes liveness probe for ApplicationSet controller
-    enabled: true
-    # -- Number of seconds after the container has started before [probe] is initiated
-    initialDelaySeconds: 10
-    # -- How often (in seconds) to perform the [probe]
-    periodSeconds: 10
-    # -- Number of seconds after which the [probe] times out
-    timeoutSeconds: 1
-    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
-    successThreshold: 1
-    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
-    failureThreshold: 3
-
-  livenessProbe:
-    # -- Enable Kubernetes liveness probe for ApplicationSet controller
-    enabled: true
-    # -- Number of seconds after the container has started before [probe] is initiated
-    initialDelaySeconds: 10
-    # -- How often (in seconds) to perform the [probe]
-    periodSeconds: 10
-    # -- Number of seconds after which the [probe] times out
-    timeoutSeconds: 1
-    # -- Minimum consecutive successes for the [probe] to be considered successful after having failed
-    successThreshold: 1
-    # -- Minimum consecutive failures for the [probe] to be considered failed after having succeeded
-    failureThreshold: 3
-
-  # -- terminationGracePeriodSeconds for container lifecycle hook
-  terminationGracePeriodSeconds: 30
+notifications:
+  # -- Enable notifications controller
+  enabled: false

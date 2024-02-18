@@ -6,7 +6,7 @@ metadata:
 spec:
   sources:
     - repoURL: "https://kubernetes.github.io/ingress-nginx"
-      targetRevision: { { .Values.spec.source.targetRevision } }
+      targetRevision: HEAD
       chart: ingress-nginx
       helm:
         valueFiles:

@@ -10,7 +10,7 @@ metric server 설치
 
 ## Argocd Server에 대한 정보
 
-bBaFjCdXbmW5n7Ew ( 2024-2-28 까지만 적용)
+admin1234 ( 2024-2-28 까지만 적용)
 
 ### 실제 운영환경과 다르게 설정한 부분 (금액 및 시간 상 생략)
 

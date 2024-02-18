@@ -8,9 +8,10 @@ metadata:
 spec:
   destination:
     namespace: default
-    server: { { .Values.spec.destination.server } }
+    server: https://kubernetes.default.svc
+
   project: default
   source:
     path: aws-ebs-csi-driver
     repoURL: https://kubernetes-sigs.github.io
-    targetRevision: { { .Values.spec.source.targetRevision } }
+    targetRevision: HEAD

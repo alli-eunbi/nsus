@@ -6,10 +6,10 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    name: in-cluster
+    server: https://kubernetes.default.svc
     namespace: argocd
   project: default
   source:
-    path: apps
-    repoURL: https://github.com/alli-eunbi/nsus/argocd
+    path: argocd/apps
+    repoURL: https://github.com/alli-eunbi/nsus.git
     targetRevision: HEAD
