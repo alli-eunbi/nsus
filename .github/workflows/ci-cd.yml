@@ -38,28 +38,20 @@ jobs:
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.0.2
         with:
-          node-version: "10.x"
+          node-version: "16.14.0"
 
-      # Npm install
-      - name: Install Dependencies
-        run: npm install
-
-      # Npm build
-      - name: Install Dependencies
-        run: npm run build
-
-      - name: Upload a Build Artifact
-        uses: actions/upload-artifact@v4.3.1
-        with:
-          # Artifact name
-          name: app
-          # A file, directory or wildcard pattern that describes what to upload
-          path: ../../app
+      # - name: Upload a Build Artifact
+      #   uses: actions/upload-artifact@v4.3.1
+      #   with:
+      #     # Artifact name
+      #     name: app
+      #     # A file, directory or wildcard pattern that describes what to upload
+      #     path: ../../app
 
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::1234567890:role/example-role
+          role-to-assume: arn:aws:iam::339713114514:role/iam-role-github-oidc
           aws-region: ap-northeast-2
       - name: Login to Amazon ECR
         id: login-ecr
@@ -70,10 +62,8 @@ jobs:
           REPOSITORY: test-api
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          ./gradlew bootBuildImage --imageName=$REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG $REGISTRY/$REPOSITORY:latest
+          docker build -t --imageName=$REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-          docker push $REGISTRY/$REPOSITORY:latest
 
       - name: Push helm repo
         env:
