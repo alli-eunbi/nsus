@@ -52,7 +52,9 @@ jobs:
           REPOSITORY: nsus
           IMAGE_TAG: ${{ github.sha }}
         run: |
+          echo $PWD
           cd app
+          ls
           docker build -t --imageName=$REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
