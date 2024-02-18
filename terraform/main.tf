@@ -336,53 +336,94 @@ resource aws_eks_access_entry nsus_cluster {
 # }
 
 
-# ################################################################################
-# # GitHub OIDC Provider
-# # Note: This is one per AWS account
-# ################################################################################
+################################################################################
+# GitHub OIDC Provider
+# Note: This is one per AWS account
+################################################################################
 
-# module "iam_github_oidc_provider" {
-#   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
+module "iam_github_oidc_provider" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
 
-#   # tags = {
-#   #   Name = "iam-provider-github-oidc"
-#   #   }
+  # tags = {
+  #   Name = "iam-provider-github-oidc"
+  #   }
+}
+
+# module "iam_github_oidc_provider_disabled" {
+#   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
+
+#   create = false
 # }
 
-# # module "iam_github_oidc_provider_disabled" {
-# #   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
 
-# #   create = false
-# # }
+################################################################################
+# GitHub OIDC Role
+################################################################################
+resource "aws_iam_policy" "ECR_Read_Write" {
+  name = "ECR_Read_Write"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        "Action": [
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:CompleteLayerUpload",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:InitiateLayerUpload",
+            "ecr:PutImage",
+            "ecr:UploadLayerPart"
+        ]
+        Effect   = "Allow"
+      },
+    ]
+  })
 
+}
+module "iam_github_oidc_role" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
 
-# ################################################################################
-# # GitHub OIDC Role
-# ################################################################################
+  name = "iam-role-github-oidc"
 
-# module "iam_github_oidc_role" {
-#   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+  # This should be updated to suit your organization, repository, references/branches, etc.
+  subjects = [
+    "https://github.com/alli-eunbi/nsus"
+  ]
 
-#   name = "iam-role-github-oidc"
+  policies = {
+    additional = aws_iam_policy.ECR_Read_Write.arn
+    ECRAccess = "arn:aws:iam::aws:policy/AmazonECRAccess"
+  }
 
-#   # This should be updated to suit your organization, repository, references/branches, etc.
-#   subjects = [
-#     # You can prepend with `repo:` but it is not required
-#     "repo:alli-eunbi/nsus"
-#   ]
+  tags = {
+    name = "iam-role-github-oidc"
+  }
+}
 
-#   # policies = {
-#   #   additional = aws_iam_policy.additional.arn
-#   #   ECRReadOnly = "arn:aws:iam::aws:policy/AmazonECRReadOnlyAccess"
-#   # }
+# module "iam_github_oidc_role_disabled" {
+#   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
 
-#   tags = {
-#     name = "iam-role-github-oidc"
-#   }
+#   create = false
 # }
 
-# # module "iam_github_oidc_role_disabled" {
-# #   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
 
-# #   create = false
-# # }
+
+################################################################################
+# ECR
+################################################################################
+resource "aws_ecr_repository" "nsus-ecr" {
+  name                 = "nsus"
+  image_tag_mutability = "MUTABLE"
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+ 
+
+output "ecr_registry_id" {
+  value = aws_ecr_repository.nsus-ecr.registry_id
+}
+
+output "ecr_repository_url" {
+  value = aws_ecr_repository.nsus-ecr.repository_url
+}
