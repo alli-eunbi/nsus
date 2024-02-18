@@ -242,7 +242,8 @@ resource "aws_iam_policy" "ECR_Read_Write" {
             "ecr:UploadLayerPart"
         ]
         "Effect"   = "Allow"
-        "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
+        "Resource" = "*"
+        # "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
       },
     ]
   })
