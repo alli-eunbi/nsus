@@ -239,11 +239,11 @@ resource "aws_iam_policy" "ECR_Read_Write" {
             "ecr:GetDownloadUrlForLayer",
             "ecr:InitiateLayerUpload",
             "ecr:PutImage",
-            "ecr:UploadLayerPart"
+            "ecr:UploadLayerPart",
+            "ecr:GetAuthorizationToken"
         ]
         "Effect"   = "Allow"
-        "Resource" = "*"
-        # "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
+        "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
       },
     ]
   })
