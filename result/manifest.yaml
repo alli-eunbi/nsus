@@ -1,0 +1,20 @@
+# 실제로는 argocd에서 helm values를 사용하기때문에 아래를 사용하진 않으나
+# 과제에서 아래와 같이 manifest.yaml 파일의 태그도 수정하는 부분을 추가하라고 하셔서 추가하였습니다.
+# "이 과정에서 Dockerfile을 빌드하고, 결과물을 특정 형식의 태그와 함께 Docker Image로 만들어 '/result/manifest.yaml' 파일에 태그를 업데이트하는 스크립트를 포함 시켜주세요."
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nsus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: app
+    spec:
+      containers:
+        - name: app
+          image: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com/nsus:latest
+          ports:
+            - containerPort: 3000
+              protocol: TCP

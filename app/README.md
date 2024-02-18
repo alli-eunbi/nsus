@@ -1,16 +1,3 @@
-### 실행방법
-
-```
-docker-compose up -d
-
-yarn install
-
-yarn start
-```
-
-mysql을 도커로 띄운 뒤 node 서버를 띄우시고 http://localhost:3000/index.html 에 접속하시면 됩니다.
-menu는 ./mysql 디렉토리의 csv 파일을 import 하시면 db에 넣을 수 있습니다.
-
 ### 파일구조
 
 Nest Js 프레임 워크를 사용하였습니다.
@@ -50,8 +37,8 @@ order과 같은 경우 if_purchased 칼럼을 추가해 결제가 진행될 시,
    비밀번호는 bcrypt를 사용하여 암호화 하였습니다.
 
 2. 로그인
-로그인을 클릭 하면 아래와 같이 쿠키에 토큰이 저장 됩니다.
-Jwt 토큰 및 passport를 활용하여 진행하였습니다.
+   로그인을 클릭 하면 아래와 같이 쿠키에 토큰이 저장 됩니다.
+   Jwt 토큰 및 passport를 활용하여 진행하였습니다.
 
 <img width="806" alt="스크린샷 2022-09-08 오후 2 06 38" src="https://user-images.githubusercontent.com/95579358/189049637-e6ced6bb-4de7-45ac-957d-e23f6d19e96f.png">
 
