@@ -1,0 +1,21 @@
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.7
+
+    container_name: order
+
+    ports:
+      - '${MYSQL_PORT}:${MYSQL_PORT}'
+    expose:
+      - '${MYSQL_PORT}'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+    env_file:
+      - .env
+    platform: linux/amd64
+    command:
+      - --character-set-server=utf8
+      - --collation-server=utf8_general_ci

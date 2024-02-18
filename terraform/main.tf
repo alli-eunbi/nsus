@@ -57,8 +57,36 @@ module "vpc" {
   tags = local.tags
 }
 
+################################################################################
+# CSI IAM ROLE
+################################################################################
+module "ebs_csi_irsa_role" {
+  source = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
 
+  role_name             = "${local.name}-ebs-csi"
+  attach_ebs_csi_policy = true
 
+  oidc_providers = {
+    ex = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
+  }
+}
+# module "ebs_csi_controller_role" {
+#   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+#   create_role                   = true
+#   role_name                     = "${local.name}-ebs-csi-controller"
+#   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+#   role_policy_arns              = [aws_iam_policy.ebs_csi_controller.arn]
+#   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:$ebs-csi-controller-sa"]
+# }
+
+# resource "aws_iam_policy" "ebs_csi_controller" {
+#   name_prefix = "ebs-csi-controller"
+#   description = "EKS ebs-csi-controller policy for cluster ${local.name}"
+#   policy      = file("${path.module}/policies/ebs_csi_controller_iam_policy.json")
+# }
 
 
 ################################################################################
@@ -91,9 +119,10 @@ module "eks" {
       most_recent    = true
       before_compute = true
     }
-    aws-ebs-csi-driver = {
-      service_account_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.name}-ebs-csi-controller"
-    }
+    # aws-ebs-csi-driver = {
+    #   # service_account_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.name}-ebs-csi-controller"
+    #   service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+    # }
 
   }
 
@@ -120,24 +149,28 @@ module "eks" {
       #   ec2_ssh_key               = module.key_pair.key_pair_name
       #   source_security_group_ids = [aws_security_group.remote_access.id]
       # }
+    }
+    tags = local.tags
   }
 
-  tags = local.tags
-}
-
-      #       create_iam_role          = true
-#       iam_role_name            = "eks-managed-node-group-complete-example"
-#       iam_role_use_name_prefix = false
-#       iam_role_description     = "EKS managed node group complete example role"
-#       iam_role_tags = {
-#         Purpose = "Protector of the kubelet"
-#       }
-#       iam_role_additional_policies = {
-#         AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-#         additional                         = aws_iam_policy.node_additional.arn
-#       }
+  # create_iam_role          = true
+  # iam_role_name            = "iam-managed-node-group"
+  # iam_role_use_name_prefix = false
+  # iam_role_description     = "EKS managed node group complete example role"
+  # iam_role_tags = {
+  #   Purpose = "Protector of the kubelet"
+  # }
+  # iam_role_additional_policies = {
+  #   AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+  #   additional                         = aws_iam_policy.node_additional.arn
+  # }
       
-    }
+}
+resource aws_eks_access_entry nsus_cluster {
+  cluster_name = local.name
+  principal_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:user/nsus"
+  type = "STANDARD"
+}
 
   
   # 나중에 운영에 가깝게 만들고 싶을때를 위해 잠시 주석 처리

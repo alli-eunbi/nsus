@@ -85,4 +85,4 @@ jobs:
           git add demo/values.yaml demo/values-eks.yaml;
           git commit --message "Update image tag to $IMAGE_TAG";
           git config -l | grep 'http\..*\.extraheader' | cut -d= -f1 | xargs -L1 git config --unset-all
-          git push --prune https://token:$token@github.com/iamchoiz/k8-cicd-argocd.git
+          git push -u origin main
