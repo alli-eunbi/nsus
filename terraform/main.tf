@@ -75,8 +75,8 @@ module "eks" {
   cluster_endpoint_public_access = true
 
   # IPV6
-  cluster_ip_family          = "ipv6"
-  create_cni_ipv6_iam_policy = true
+  # cluster_ip_family          = "ipv6"
+  # create_cni_ipv6_iam_policy = true
 
   enable_cluster_creator_admin_permissions = true
 
@@ -269,88 +269,87 @@ module "eks" {
 #     }
 
 
-################################################################################
-# Helm Chart Module
-################################################################################
+# ################################################################################
+# # Helm Chart Module
+# ################################################################################
 
-data "aws_eks_cluster" "nsus_cluster" {
-  name = local.name
-}
+# data "aws_eks_cluster" "nsus_cluster" {
+#   name = local.name
+# }
 
-data "aws_eks_cluster_auth" "nsus_auth" {
-  name = local.name
-}
-provider "helm" {
-  kubernetes {
-    host  = data.aws_eks_cluster.nsus_cluster.endpoint
-    token = data.aws_eks_cluster_auth.nsus_auth.token
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.nsus_cluster.certificate_authority[0].data)
-  }
-}
+# data "aws_eks_cluster_auth" "nsus_auth" {
+#   name = local.name
+# }
+# provider "helm" {
+#   kubernetes {
+#     host  = data.aws_eks_cluster.nsus_cluster.endpoint
+#     token = data.aws_eks_cluster_auth.nsus_auth.token
+#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.nsus_cluster.certificate_authority[0].data)
+#   }
+# }
 
-resource "helm_release" "metrics_server" {
-  namespace        = "kube-system"
-  name             = "metrics-server"
-  chart            = "metrics-server"
-  version          = "3.8.2"
-  repository       = "https://kubernetes-sigs.github.io/metrics-server/"
-  create_namespace = true
+# resource "helm_release" "metrics_server" {
+#   namespace        = "kube-system"
+#   name             = "metrics-server"
+#   chart            = "metrics-server"
+#   version          = "3.8.2"
+#   repository       = "https://kubernetes-sigs.github.io/metrics-server/"
+#   create_namespace = true
   
-  set {
-    name  = "replicas"
-    value = 1
-  }
-}
-
-
-################################################################################
-# GitHub OIDC Provider
-# Note: This is one per AWS account
-################################################################################
-
-module "iam_github_oidc_provider" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
-
-  # tags = {
-  #   Name = "iam-provider-github-oidc"
-  #   }
-}
-
-# module "iam_github_oidc_provider_disabled" {
-#   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
-
-#   create = false
+#   set {
+#     name  = "replicas"
+#     value = 1
+#   }
 # }
 
 
-################################################################################
-# GitHub OIDC Role
-################################################################################
+# ################################################################################
+# # GitHub OIDC Provider
+# # Note: This is one per AWS account
+# ################################################################################
 
-module "iam_github_oidc_role" {
-  source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+# module "iam_github_oidc_provider" {
+#   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-provider"
 
-  name = "iam-role-github-oidc"
-
-  # This should be updated to suit your organization, repository, references/branches, etc.
-  subjects = [
-    # You can prepend with `repo:` but it is not required
-    "repo:alli-eunbi/nsus"
-  ]
-
-# Todo : ecr readonly
-  # policies = {
-  #   additional = aws_iam_policy.additional.arn
-  #   S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
-  # }
-
-  # tags = {
-  #   name = "iam-role-github-oidc"
-  # }
-}
-
-# module "iam_github_oidc_role_disabled" {
-#   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
-
-#   create = false
+#   # tags = {
+#   #   Name = "iam-provider-github-oidc"
+#   #   }
 # }
+
+# # module "iam_github_oidc_provider_disabled" {
+# #   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
+
+# #   create = false
+# # }
+
+
+# ################################################################################
+# # GitHub OIDC Role
+# ################################################################################
+
+# module "iam_github_oidc_role" {
+#   source = "terraform-aws-modules/iam/aws//modules/iam-github-oidc-role"
+
+#   name = "iam-role-github-oidc"
+
+#   # This should be updated to suit your organization, repository, references/branches, etc.
+#   subjects = [
+#     # You can prepend with `repo:` but it is not required
+#     "repo:alli-eunbi/nsus"
+#   ]
+
+#   # policies = {
+#   #   additional = aws_iam_policy.additional.arn
+#   #   ECRReadOnly = "arn:aws:iam::aws:policy/AmazonECRReadOnlyAccess"
+#   # }
+
+#   tags = {
+#     name = "iam-role-github-oidc"
+#   }
+# }
+
+# # module "iam_github_oidc_role_disabled" {
+# #   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
+
+# #   create = false
+# # }

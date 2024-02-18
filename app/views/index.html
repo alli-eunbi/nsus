@@ -1,0 +1,182 @@
+<html lang="ko">
+  <head>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="header-right">
+        <div class="email-warpper">
+          <div>email</div>
+          <input type="text" id="email" value="asf@naver.com" />
+        </div>
+        <div class="name-warpper">
+          <div>name</div>
+          <input type="text" id="name" value="임은비" />
+        </div>
+        <div class="password-warpper">
+          <div>password</div>
+          <input type="password" id="password" value="1234" />
+        </div>
+      </div>
+      <button id="login-button">로그인</button>
+      <button id="signup-button">회원가입</button>
+      <button id="logout-button">로그아웃</button>
+    </div>
+
+    <h3>메뉴</h3>
+    <div id="menu-wrapper"></div>
+    <h3>장바구니</h3>
+    <div id="cart-wrapper">
+      <div>
+        <button id="add-cart-button" type="button">
+          장바구니에 김치찌개 3개 추가하기
+        </button>
+      </div>
+    </div>
+    <h3>주문하기</h3>
+    <button type="button" id="order-button">주문하기</button>
+    <h3>결제하기</h3>
+    <button type="button" id="purchase-button">결제하기</button>
+  </body>
+  <script>
+    let user;
+    let client = axios.create({
+      headers: {
+        Authorization: document.cookie.replace('access_token=', ''),
+      },
+    });
+
+    const SERVER_ENDPOINT = 'http://localhost:3000';
+    const emailInput = document.querySelector('#email');
+    const nameInput = document.querySelector('#name');
+    const passwordInput = document.querySelector('#password');
+
+    const loginButton = document.querySelector('#login-button');
+    const signupButton = document.querySelector('#signup-button');
+    const logoutButton = document.querySelector('#logout-button');
+
+    const menuWrapper = document.querySelector('#menu-wrapper');
+    const cartWrapper = document.querySelector('#cart-wrapper');
+    const addCartButton = document.querySelector('#add-cart-button');
+    const orderButton = document.querySelector('#order-button');
+    const purchaseButton = document.querySelector('#purchase-button');
+    //메뉴
+    let menuList = [];
+    //장바구니
+    let cartList = [];
+    //주문
+    const orderList = [];
+    //결제
+    const purchaseList = [];
+
+    const refreshClient = () => {
+      client = axios.create({
+        baseURL: SERVER_ENDPOINT,
+        headers: {
+          Authorization: document.cookie.replace('access_token=', ''),
+        },
+      });
+    };
+
+    const refreshUser = () => {
+      client
+        .get('auth/profile')
+        .then((res) => {
+          user = res.data;
+          console.log(user, 'user updated');
+          getMenu();
+        })
+        .catch((e) => {
+          console.log('error', e);
+        });
+    };
+
+    const signup = async () => {
+      await axios.post('users/signup', {
+        email: emailInput.value,
+        name: nameInput.value,
+        password: passwordInput.value,
+      });
+    };
+    signupButton.addEventListener('click', () => {
+      signup();
+    });
+
+    const login = async () => {
+      await client.post('auth/login', {
+        email: emailInput.value,
+        password: passwordInput.value,
+      });
+      refreshClient();
+      refreshUser();
+    };
+    loginButton.addEventListener('click', () => {
+      login();
+    });
+
+    const logout = async () => {
+      client = client.create({
+        headers: {
+          Authorization: document.cookie.replace('access_token=', ''),
+        },
+      });
+      await client.delete('auth/logout');
+    };
+    logoutButton.addEventListener('click', () => {
+      logout();
+    });
+
+    const getMenu = async () => {
+      const res = await client.get('menu');
+      menuList = res.data;
+      res.data.forEach((menu) => {
+        const nameDom = document.createElement('div');
+        nameDom.innerText = menu.name;
+        const priceDom = document.createElement('div');
+        priceDom.innerText = menu.price;
+
+        const menuDom = document.createElement('div');
+        menuDom.className = 'menu-item';
+        menuDom.append(nameDom);
+        menuDom.append(priceDom);
+
+        menuWrapper.append(menuDom);
+      });
+    };
+
+    addCartButton.addEventListener('click', () => {
+      client
+        .post('carts', {
+          total_price: 9000,
+          orders: [{ menu_id: 1, count: 3 }],
+        })
+        .then(() => {
+          alert('장바구니에 김치찌개 3개 추가되었습니다.');
+        });
+    });
+    orderButton.addEventListener('click', () => {
+      client.post('orders').then(() => {
+        alert('주문되었습니다.');
+      });
+    });
+
+    purchaseButton.addEventListener('click', () => {
+      client
+        .post('purchases', {
+          order_id: 23,
+          total_price: 9000,
+          orders: [{ menu_id: 1, count: 3 }],
+        })
+        .then(() => {
+          alert('결제되었습니다.');
+        });
+    });
+
+    //main
+    refreshClient();
+    refreshUser();
+  </script>
+</html>
