@@ -14,3 +14,8 @@ spec:
     path: argocd/apps
     repoURL: https://github.com/alli-eunbi/nsus.git
     targetRevision: HEAD
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
