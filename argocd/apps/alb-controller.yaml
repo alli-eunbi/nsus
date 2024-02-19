@@ -11,7 +11,7 @@ spec:
       helm:
         parameters:
           - name: "clusterName"
-            value: nsus-cluster
+            value: "nsus-cluster"
           - name: "serviceAccount.create"
             value: "true"
           - name: "serviceAccount.name"
