@@ -8,7 +8,7 @@ image:
   repository: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com/nsus
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "71"
 
 service:
   type: ClusterIP
