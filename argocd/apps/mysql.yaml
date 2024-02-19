@@ -16,6 +16,7 @@ spec:
             value: "root"
           - name: "auth.rootPassword"
             value: "1234"
+            forceString: true
           - name: "auth.database"
             value: "order"
           - name: "primary.command"
