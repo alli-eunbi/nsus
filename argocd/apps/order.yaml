@@ -13,10 +13,10 @@ spec:
   source:
     repoURL: https://github.com/alli-eunbi/nsus.git
     targetRevision: main
-    path: ../../base
+    path: base
     helm:
       valueFiles:
-        - ../order-values.yaml
+        - ../argocd/order-values.yaml
 
   syncPolicy:
     automated:

@@ -103,11 +103,6 @@ module "eks" {
       most_recent    = true
       before_compute = true
     }
-    # aws-ebs-csi-driver = {
-    #   # service_account_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.name}-ebs-csi-controller"
-    #   service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-    #   resolve_conflicts        = "OVERWRITE"
-    # }
   }
 
   vpc_id                   = module.vpc.vpc_id
@@ -168,8 +163,7 @@ resource "aws_iam_policy" "ECR_Read_Write" {
         ]
         "Effect"   = "Allow"
         "Resource" = "*"
-        # "Resource" = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
-      },
+       },
     ]
   })
 
@@ -187,10 +181,8 @@ module "iam_github_oidc_role" {
   ]
 
   policies = {
-    # S3ReadOnly = "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess"
     additional = aws_iam_policy.ECR_Read_Write.arn
-    # resource = "arn:aws:ecr:ap-northeast-2:${data.aws_caller_identity.current.account_id}:repository/nsus"
-  }
+    }
 
   tags = {
     name = "iam-role-github-oidc"
@@ -227,7 +219,6 @@ module "db" {
   create_db_option_group    = false
   create_db_parameter_group = false
 
-  # All available versions: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html#MySQL.Concepts.VersionMgmt
   engine               = "mysql"
   engine_version       = "8.0"
   family               = "mysql8.0" # DB parameter group

@@ -5,8 +5,8 @@ name: CI / CD
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  pull_request:
-    branches: ["main"]
+  pull_request_review:
+    types: [submitted]
 
 permissions:
   id-token: write
@@ -77,5 +77,6 @@ jobs:
         run: |
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
+          git pull
           git commit -a -m "Add changes"
           git push origin HEAD:main

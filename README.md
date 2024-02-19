@@ -3,10 +3,6 @@
 1. Nest JS를 사용한 이유는 빠르게 개발하기 위해 사용하였습니다.
 2. 애플리케이션과 Dockerfile은 app 디렉토리에 정의되어 있습니다.
 
-base에 있는 모듈 정리
-cluster version 주석처리 해제 및 버전 수정
-metric server 설치
-
 ### CI Workflow 구성
 
 1. .github 디렉토리에 workflow를 정의 하였습니다.
