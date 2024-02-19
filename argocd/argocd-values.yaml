@@ -302,13 +302,16 @@ configs:
       name: nsus
       type: git
     metric-server:
-      url: registry-1.docker.io/bitnamicharts/mysql
+      url: https://kubernetes-sigs.github.io/metrics-server
+      namee: metric-server
       type: helm
-      name: mysql
-      enableOCI: "true"
-    kubernetes-resources:
-      url: https://kubernetes-sigs.github.io
-      name: resources
+    ebs:
+      url: https://kubernetes-sigs.github.io/aws-ebs-csi-driver
+      namee: ebs
+      type: helm
+    alb-controller:
+      url: https://aws.github.io/eks-charts
+      namee: alb-controller
       type: helm
     # private-helm-repo:
     #   url: https://my-private-chart-repo.internal
