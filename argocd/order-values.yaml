@@ -54,4 +54,3 @@ volumes:
 volumeMounts:
   - name: nsus
     mountPath: "/"
-    readOnly: true
