@@ -66,9 +66,18 @@ jobs:
           docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
+      - name: Replace image tag in helm values (EKS)
+        uses: mikefarah/yq@master
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        with:
+          cmd: yq eval -i 'tag:"env(IMAGE_TAG)"' 'argocd/order-values.yaml'
+
       - name: Push helm repo
         env:
           IMAGE_TAG: ${{ github.sha }}
         run: |
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
+          git add .
+          git push
