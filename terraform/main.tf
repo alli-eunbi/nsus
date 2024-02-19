@@ -46,6 +46,7 @@ module "vpc" {
   # 실제 운영 서버라면 컨트롤 플레인 접근을 vpc 내부로만 진행하도록 intrasubnet을 활용했겠지만, 과제이기 때문에 생략.
 #   intra_subnet_names       = []
 
+  create_database_subnet_group = true
   manage_default_network_acl    = false
   manage_default_route_table    = false
 
@@ -168,41 +169,6 @@ module "eks" {
 }
 
 
-
-# ################################################################################
-# # Helm Chart Module
-# ################################################################################
-
-# data "aws_eks_cluster" "nsus_cluster" {
-#   name = local.name
-# }
-
-# data "aws_eks_cluster_auth" "nsus_auth" {
-#   name = local.name
-# }
-# provider "helm" {
-#   kubernetes {
-#     host  = data.aws_eks_cluster.nsus_cluster.endpoint
-#     token = data.aws_eks_cluster_auth.nsus_auth.token
-#     cluster_ca_certificate = base64decode(data.aws_eks_cluster.nsus_cluster.certificate_authority[0].data)
-#   }
-# }
-
-# resource "helm_release" "metrics_server" {
-#   namespace        = "kube-system"
-#   name             = "metrics-server"
-#   chart            = "metrics-server"
-#   version          = "3.8.2"
-#   repository       = "https://kubernetes-sigs.github.io/metrics-server/"
-#   create_namespace = true
-  
-#   set {
-#     name  = "replicas"
-#     value = 1
-#   }
-# }
-
-
 ################################################################################
 # GitHub OIDC Provider
 # Note: This is one per AWS account
@@ -215,12 +181,6 @@ module "iam_github_oidc_provider" {
     Name = "iam-provider-github-oidc"
     }
 }
-
-# module "iam_github_oidc_provider_disabled" {
-#   source = "terraform-aws-modules/iam/aws//examples/iam-github-oidc"
-
-#   create = false
-# }
 
 
 ################################################################################
@@ -304,4 +264,62 @@ output "ecr_registry_id" {
 
 output "ecr_repository_url" {
   value = aws_ecr_repository.nsus-ecr.repository_url
+}
+
+################################################################################
+# RDS Module
+################################################################################
+module "db_default" {
+  source = "terraform-aws-modules/rds/aws"
+
+  identifier = "${local.name}-default"
+
+  create_db_option_group    = false
+  create_db_parameter_group = false
+
+  # All available versions: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html#MySQL.Concepts.VersionMgmt
+  engine               = "mysql"
+  engine_version       = "8.0"
+  family               = "mysql8.0" # DB parameter group
+  major_engine_version = "8.0"      # DB option group
+  instance_class       = "db.t4g.micro"
+
+  allocated_storage = 200
+
+  db_name  = "order"
+  username = "admin"
+  port     = 3306
+
+  db_subnet_group_name   = module.vpc.database_subnet_group
+  vpc_security_group_ids = [module.security_group.security_group_id]
+
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window      = "03:00-06:00"
+
+  backup_retention_period = 0
+
+  tags = local.tags
+}
+module "security_group" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 5.0"
+
+  name        = "sg_mysql"
+  description = "Complete MySQL example security group"
+  vpc_id      = module.vpc.vpc_id
+
+  # ingress
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 3306
+      to_port     = 3306
+      protocol    = "tcp"
+      description = "MySQL access from within VPC"
+      cidr_blocks = module.vpc.vpc_cidr_block
+    },
+  ]
+
+  tags = {
+    Name = "sg-mysql"
+  }
 }
