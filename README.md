@@ -1,3 +1,14 @@
+### 디렉토리 설정
+
+```
+.
+├── app      // 애플리케이션(음식 주문이 가능한 앱)
+├── argocd   // argocd 설정 관련
+├── base     // 기본 helm 차트
+├── manifest  // EBS storage 관련
+└── terraform // terraform 설정
+```
+
 ### 애플리케이션 관련 설명
 
 1. Nest JS를 사용한 이유는 빠르게 개발하기 위해 사용하였습니다.
