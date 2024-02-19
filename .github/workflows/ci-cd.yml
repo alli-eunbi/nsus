@@ -60,7 +60,7 @@ jobs:
         env:
           REGISTRY: 339713114514.dkr.ecr.ap-northeast-2.amazonaws.com
           REPOSITORY: nsus
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.run_number }}
         run: |
           cd app
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -69,13 +69,13 @@ jobs:
       - name: Replace image tag in helm values (EKS)
         uses: mikefarah/yq@master
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.run_number }}
         with:
           cmd: yq eval -i 'tag:"env(IMAGE_TAG)"' 'argocd/order-values.yaml'
 
       - name: Push helm repo
         env:
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ github.run_number }}
         run: |
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
