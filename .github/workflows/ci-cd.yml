@@ -27,6 +27,7 @@ jobs:
 
       - name: Generate Environment Variables File for Production
         run: |
+          cd app
           echo "MYSQL_DATABASE=$MYSQL_DATABASE" >> .env
           echo "MYSQL_HOST=$MYSQL_HOST" >> .env
           echo "MYSQL_USER_NAME=$MYSQL_USER_NAME" >> .env
@@ -60,7 +61,6 @@ jobs:
           REPOSITORY: nsus
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          cd app
           docker build -t nsus .
           docker tag $REGISTRY/$REPOSITORY:$IMAGE_TAG
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
