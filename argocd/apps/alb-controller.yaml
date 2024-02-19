@@ -13,7 +13,7 @@ spec:
           - name: "clusterName"
             value: nsus-cluster
           - name: "serviceAccount.create"
-            value: true
+            value: "true"
           - name: "serviceAccount.name"
             value: aws-load-balancer-controller
           - name: "image.repository"
