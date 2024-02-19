@@ -20,18 +20,24 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    env:
-      MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
-      MYSQL_HOST: ${{secrets.MYSQL_HOST}}
-      MYSQL_USER_NAME: ${{secrets.MYSQL_USER_NAME}}
-      AUTH_KEY: ${{secrets.AUTH_KEY}}
-      SALT: ${{secrets.SALT}}
-      MYSQL_PORT: 3306
-
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+
+      - name: Generate Environment Variables File for Production
+        run: |
+          echo "MYSQL_DATABASE=$MYSQL_DATABASE" >> .env
+          echo "MYSQL_HOST=$MYSQL_HOST" >> .env
+          echo "MYSQL_USER_NAME=$MYSQL_USER_NAME" >> .env
+          echo "AUTH_KEY=AUTH_KEY" >> .env
+          echo "SALT=$SALT" >> .env
+        env:
+          MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
+          MYSQL_HOST: ${{secrets.MYSQL_HOST}}
+          MYSQL_USER_NAME: ${{secrets.MYSQL_USER_NAME}}
+          AUTH_KEY: ${{secrets.AUTH_KEY}}
+          SALT: ${{secrets.SALT}}
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4.0.2
