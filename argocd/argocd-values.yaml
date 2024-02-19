@@ -1,3 +1,4 @@
+#helm upgrade --install  argocd argo/argo-cd -n argocd -f argocd/argocd-values.yaml
 # -- Provide a name in place of `argocd`
 nameOverride: argocd
 
@@ -300,15 +301,15 @@ configs:
       url: https://github.com/alli-eunbi/nsus.git
       name: nsus
       type: git
-    mysql:
+    metric-server:
       url: registry-1.docker.io/bitnamicharts/mysql
       type: helm
       name: mysql
       enableOCI: "true"
-    # istio-helm-repo:
-    #   url: https://storage.googleapis.com/istio-prerelease/daily-build/master-latest-daily/charts
-    #   name: istio.io
-    #   type: helm
+    kubernetes-resources:
+      url: https://kubernetes-sigs.github.io
+      name: resources
+      type: helm
     # private-helm-repo:
     #   url: https://my-private-chart-repo.internal
     #   name: private-repo

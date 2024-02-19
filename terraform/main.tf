@@ -43,10 +43,10 @@ module "vpc" {
 
   private_subnet_names = ["private-subnet-a", "private-subnet-c"]
   public_subnet_names = ["public-subnet-a", "public-subnet-c"]
-  # 실제 운영 서버라면 컨트롤 플레인 접근을 vpc 내부로만 진행하도록 intrasubnet을 활용했겠지만, 과제이기 때문에 생략.
-#   intra_subnet_names       = []
+  database_subnets = ["10.0.12.0/24", "10.0.22.0/24"] #데이터베이스 서브넷
 
   create_database_subnet_group = true
+  create_database_subnet_route_table = true 
   manage_default_network_acl    = false
   manage_default_route_table    = false
 
@@ -269,7 +269,7 @@ output "ecr_repository_url" {
 ################################################################################
 # RDS Module
 ################################################################################
-module "db_default" {
+module "db" {
   source = "terraform-aws-modules/rds/aws"
 
   identifier = "${local.name}-default"
@@ -286,17 +286,33 @@ module "db_default" {
 
   allocated_storage = 200
 
-  db_name  = "order"
+  db_name  = "nsus"
   username = "admin"
   port     = 3306
 
+
+  multi_az               = false
   db_subnet_group_name   = module.vpc.database_subnet_group
   vpc_security_group_ids = [module.security_group.security_group_id]
+  create_cloudwatch_log_group     = false
 
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
+  skip_final_snapshot = true
+  deletion_protection = false
 
-  backup_retention_period = 0
+  performance_insights_enabled          = false
+  create_monitoring_role                = false
+
+
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8mb4"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8mb4"
+    }
+  ]
 
   tags = local.tags
 }
