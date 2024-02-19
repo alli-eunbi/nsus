@@ -12,7 +12,6 @@ spec:
       #   valueFiles:
       #     - ../apps/ingress-nginx.yaml
   destination:
-    name: "alb-controller"
     namespace: default
     server: "https://kubernetes.default.svc"
   project: default
