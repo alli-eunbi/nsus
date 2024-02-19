@@ -66,12 +66,12 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-      - name: Replace image tag in helm values (EKS)
-        uses: mikefarah/yq@master
-        env:
-          IMAGE_TAG: ${{ github.run_number }}
-        with:
-          cmd: yq eval -i 'tag:"env(IMAGE_TAG)"' 'argocd/order-values.yaml'
+      - name: Set Tag Value
+        id: set_tag
+        run: |
+          TAG=${{ github.run_number }}
+          sed -i "s/tag: .*/tag: $TAG/" argocd/order-values.yaml
+        shell: bash
 
       - name: Push helm repo
         run: |
