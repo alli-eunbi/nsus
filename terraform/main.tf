@@ -40,10 +40,7 @@ module "vpc" {
 
   private_subnet_names = ["private-subnet-a", "private-subnet-c"]
   public_subnet_names = ["public-subnet-a", "public-subnet-c"]
-  database_subnets = ["10.0.12.0/24", "10.0.22.0/24"] #데이터베이스 서브넷
 
-  create_database_subnet_group = true
-  create_database_subnet_route_table = true 
   manage_default_network_acl    = false
   manage_default_route_table    = false
 
@@ -215,59 +212,59 @@ output "ecr_repository_url" {
   value = aws_ecr_repository.nsus-ecr.repository_url
 }
 
-# ################################################################################
-# # RDS Module
-# ################################################################################
-# module "db" {
-#   source = "terraform-aws-modules/rds/aws"
+################################################################################
+# RDS Module
+################################################################################
+module "db" {
+  source = "terraform-aws-modules/rds/aws"
 
-#   identifier = "${local.name}-default"
+  identifier = "${local.name}-default"
 
-#   create_db_option_group    = false
-#   create_db_parameter_group = false
+  create_db_option_group    = false
+  create_db_parameter_group = false
 
-#   # All available versions: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html#MySQL.Concepts.VersionMgmt
-#   engine               = "mysql"
-#   engine_version       = "8.0"
-#   family               = "mysql8.0" # DB parameter group
-#   major_engine_version = "8.0"      # DB option group
-#   instance_class       = "db.t4g.micro"
+  # All available versions: http://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_MySQL.html#MySQL.Concepts.VersionMgmt
+  engine               = "mysql"
+  engine_version       = "8.0"
+  family               = "mysql8.0" # DB parameter group
+  major_engine_version = "8.0"      # DB option group
+  instance_class       = "db.t3g.micro"
 
-#   allocated_storage = 200
+  allocated_storage = 200
 
-#   db_name  = "nsus"
-#   username = "admin"
-#   port     = 3306
+  db_name  = "order"
+  username = "admin"
+  port     = 3306
 
-#   manage_master_user_password = false
-#   password = "admin1234"
+  manage_master_user_password = false
+  password = "admin1234"
 
-#   multi_az               = false
-#   db_subnet_group_name   = module.vpc.database_subnet_group
-#   vpc_security_group_ids = ["sg-030c6835659768139"]
-#   create_cloudwatch_log_group     = false
-#   publicly_accessible = true
+  multi_az               = false
+  db_subnet_group_name   = module.vpc.public_subnets[0]
+  vpc_security_group_ids = [module.security_group.security_group_id]
+  create_cloudwatch_log_group     = false
+  publicly_accessible = true
 
-#   skip_final_snapshot = true
-#   deletion_protection = false
+  skip_final_snapshot = true
+  deletion_protection = false
 
-#   performance_insights_enabled          = false
-#   create_monitoring_role                = false
+  performance_insights_enabled          = false
+  create_monitoring_role                = false
 
 
-#   parameters = [
-#     {
-#       name  = "character_set_client"
-#       value = "utf8mb4"
-#     },
-#     {
-#       name  = "character_set_server"
-#       value = "utf8mb4"
-#     }
-#   ]
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8mb4"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8mb4"
+    }
+  ]
 
-#   tags = local.tags
-# }
+  tags = local.tags
+}
 module "security_group" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.0"

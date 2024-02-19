@@ -7,14 +7,26 @@ spec:
   sources:
     - repoURL: "https://aws.github.io/eks-charts"
       targetRevision: 1.7.1
-      chart: aws-load-balancer-controller
-      # helm:
-      #   valueFiles:
-      #     - ../apps/ingress-nginx.yaml
+      chart: eks/aws-load-balancer-controller
+      helm:
+        parameters:
+          - name: "clusterName"
+            value: "nsus-cluster"
+          - name: "serviceAccount.create"
+            value: true
+          - name: "serviceAccount.name"
+            value: "aws-load-balancer-controller"
+          - name: "image.repository"
+            value: "602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon/aws-load-balancer-controller"
+          - name: "region"
+            value: "ap-northeast-2"
+          - name: "vpcId"
+            value: "vpc-0fcccd5be7a19b121"
   destination:
     namespace: kube-system
     server: "https://kubernetes.default.svc"
   project: default
+
   syncPolicy:
     automated:
       prune: true
