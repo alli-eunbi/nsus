@@ -11,9 +11,16 @@ spec:
     namespace: argocd
   project: default
   source:
-    path: ../../base
     repoURL: https://github.com/alli-eunbi/nsus.git
     targetRevision: HEAD
+    path: ../../base
     helm:
       valueFiles:
         - ../order-values.yaml
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
