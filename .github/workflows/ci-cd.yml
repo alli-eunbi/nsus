@@ -24,6 +24,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN_FOR_GITHUB}}
 
       - name: Generate Environment Variables File for Production
         run: |
@@ -74,8 +76,6 @@ jobs:
           cmd: yq eval -i 'tag:"env(IMAGE_TAG)"' 'argocd/order-values.yaml'
 
       - name: Push helm repo
-        env:
-          IMAGE_TAG: ${{ github.run_number }}
         run: |
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
