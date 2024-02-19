@@ -53,4 +53,5 @@ volumes:
 # Additional volumeMounts on the output Deployment definition.
 volumeMounts:
   - name: nsus
-    mountPath: "/"
+    mountPath: /etc
+    readOnly: true
