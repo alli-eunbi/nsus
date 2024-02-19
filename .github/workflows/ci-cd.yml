@@ -24,6 +24,8 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN_FOR_GITHUB }}
 
       - name: Generate Environment Variables File for Production
         run: |
@@ -78,9 +80,4 @@ jobs:
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
           git commit -a -m "Add changes"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.TOKEN_FOR_GITHUB }}
-          branch: ${{ github.ref }}
+          git push
