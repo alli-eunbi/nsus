@@ -12,7 +12,7 @@ spec:
       #   valueFiles:
       #     - ../apps/ingress-nginx.yaml
   destination:
-    namespace: default
+    namespace: kube-system
     server: "https://kubernetes.default.svc"
   project: default
   syncPolicy:

@@ -10,17 +10,6 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-serviceAccount:
-  # Specifies whether a service account should be created
-  create: true
-  # Automatically mount a ServiceAccount's API credentials?
-  automount: true
-  # Annotations to add to the service account
-  annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
-
 service:
   type: ClusterIP
   port: 80
@@ -60,20 +49,12 @@ readinessProbe:
     port: http
 
 # Additional volumes on the output Deployment definition.
-volumes: []
-# - name: foo
-#   secret:
-#     secretName: mysecret
-#     optional: false
-
+volumes:
+  - name: nsus
+    persistentVolumeClaim:
+      claimName: nsus-pvc
 # Additional volumeMounts on the output Deployment definition.
-volumeMounts: []
-# - name: foo
-#   mountPath: "/etc/foo"
-#   readOnly: true
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
+volumeMounts:
+  - name: volume
+    mountPath: "/"
+    readOnly: true
