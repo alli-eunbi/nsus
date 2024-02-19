@@ -74,20 +74,11 @@ module "ebs_csi_irsa_role" {
     }
   }
 }
-# module "ebs_csi_controller_role" {
-#   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-#   create_role                   = true
-#   role_name                     = "${local.name}-ebs-csi-controller"
-#   provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
-#   role_policy_arns              = [aws_iam_policy.ebs_csi_controller.arn]
-#   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:$ebs-csi-controller-sa"]
-# }
-
-# resource "aws_iam_policy" "ebs_csi_controller" {
-#   name_prefix = "ebs-csi-controller"
-#   description = "EKS ebs-csi-controller policy for cluster ${local.name}"
-#   policy      = file("${path.module}/policies/ebs_csi_controller_iam_policy.json")
-# }
+resource "aws_iam_policy" "ebs_csi_controller" {
+  name_prefix = "ebs-csi-controller"
+  description = "EKS ebs-csi-controller policy for cluster ${local.name}"
+  policy      = file("./addons.json")
+}
 
 
 ################################################################################
@@ -120,10 +111,10 @@ module "eks" {
       most_recent    = true
       before_compute = true
     }
-    # aws-ebs-csi-driver = {
-    #   # service_account_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.name}-ebs-csi-controller"
-    #   service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
-    # }
+    aws-ebs-csi-driver = {
+      # service_account_role_arn = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/${local.name}-ebs-csi-controller"
+      service_account_role_arn = module.ebs_csi_irsa_role.iam_role_arn
+    }
 
   }
 
@@ -295,6 +286,7 @@ module "db" {
   db_subnet_group_name   = module.vpc.database_subnet_group
   vpc_security_group_ids = [module.security_group.security_group_id]
   create_cloudwatch_log_group     = false
+  publicly_accessible = true
 
   skip_final_snapshot = true
   deletion_protection = false
