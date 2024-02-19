@@ -1,1 +1,1 @@
-- [{'!!map': env(IMAGE_TAG)}]
+- [{'!!seq': env(IMAGE_TAG)}]
