@@ -78,4 +78,4 @@ jobs:
           git config --global user.email "allieunbi@gmail.com"
           git config --global user.name "eunbi"
           git commit -a -m "Add changes"
-          git push
+          git push origin HEAD:main
