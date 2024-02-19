@@ -15,7 +15,7 @@ spec:
           - name: "auth.username"
             value: "root"
           - name: "auth.rootPassword"
-            value: 1234
+            value: "1234"
           - name: "auth.database"
             value: "order"
           - name: "primary.command"
