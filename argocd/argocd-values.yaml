@@ -300,6 +300,11 @@ configs:
       url: https://github.com/alli-eunbi/nsus.git
       name: nsus
       type: git
+    mysql:
+      url: registry-1.docker.io/bitnamicharts/mysql
+      type: helm
+      name: mysql
+      enableOCI: "true"
     # istio-helm-repo:
     #   url: https://storage.googleapis.com/istio-prerelease/daily-build/master-latest-daily/charts
     #   name: istio.io
