@@ -1,3 +1,5 @@
+현재는 비용 문제때문에 terraform destroy로 전부 삭제하였습니다.
+
 ### 디렉토리 설정
 
 ```
@@ -20,6 +22,7 @@
 2. argocd/order-values.yaml에 태그를 업데이트 하는 스크립트가 포함되어 있습니다.
 
 ### ArgoCD 설정
+<img width="1353" alt="스크린샷 2024-02-20 오전 12 03 38" src="https://github.com/alli-eunbi/nsus/assets/95579358/21051a68-cacf-42a8-9c88-2ca543a558ac">
 
 1. App of Apps 패턴을 사용하여 클러스터 생성시 필요한 앱들이 한꺼번에 배포되도록 설정하였습니다.
 2. argocd/app-of-apps.yaml 은 apps 디렉토리에 있는 app들을 배포 하도록 합니다.
