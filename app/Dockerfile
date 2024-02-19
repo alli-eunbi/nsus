@@ -5,4 +5,4 @@ WORKDIR /
 
 RUN yarn
 
-RUN yarn start
+CMD [ "yarn", "start" ]
