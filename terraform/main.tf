@@ -39,7 +39,11 @@ module "vpc" {
   public_subnets      = local.public_subnets
 
   private_subnet_names = ["private-subnet-a", "private-subnet-c"]
-  public_subnet_names = ["public-subnet-a", "public-subnet-c"]
+  public_subnet_names = ["public-subnet-a", "public-subnet-c"] 
+  database_subnets = ["10.0.12.0/24", "10.0.22.0/24"] #데이터베이스 서브넷
+
+  create_database_subnet_group = true
+  # create_database_subnet_route_table = true 
 
   manage_default_network_acl    = false
   manage_default_route_table    = false
@@ -228,11 +232,11 @@ module "db" {
   engine_version       = "8.0"
   family               = "mysql8.0" # DB parameter group
   major_engine_version = "8.0"      # DB option group
-  instance_class       = "db.t3g.micro"
+  instance_class       = "db.t4g.small"
 
   allocated_storage = 200
 
-  db_name  = "order"
+  db_name  = "nsus"
   username = "admin"
   port     = 3306
 
@@ -240,7 +244,7 @@ module "db" {
   password = "admin1234"
 
   multi_az               = false
-  db_subnet_group_name   = module.vpc.public_subnets[0]
+  db_subnet_group_name   = module.vpc.database_subnet_group
   vpc_security_group_ids = [module.security_group.security_group_id]
   create_cloudwatch_log_group     = false
   publicly_accessible = true
