@@ -9,7 +9,7 @@ spec:
   sources:
     - repoURL: registry-1.docker.io/bitnamicharts
       chart: mysql
-      targetRevision: HEAD
+      targetRevision: "8.0.36"
       helm:
         parameters:
           - name: "auth.username"
